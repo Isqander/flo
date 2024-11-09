@@ -1,4 +1,4 @@
-POST http://localhost:8080/api/products?name=name&description=description&category=category&price=112&status=ACTIVE
+POST http://localhost:8080/api/products?name=name&description=description&categoryIds=1&price=112&status=ACTIVE
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -15,5 +15,21 @@ Content-Type: image/jpeg
 
 ###
 
-GET http://localhost:8080/api/products/3
+GET http://localhost:8080/api/products/1
 Accept: application/json
+
+###
+
+POST http://localhost:8080/api/categories
+Content-Type: application/json
+
+{
+  "name": "кимоно"
+}
+
+###
+
+GET http://localhost:8080/api/categories
+Accept: application/json
+
+###

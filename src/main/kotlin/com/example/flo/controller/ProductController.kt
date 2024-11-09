@@ -1,7 +1,9 @@
 package com.example.flo.controller
 
+import com.example.flo.model.Category
 import com.example.flo.model.Product
 import com.example.flo.model.Status
+import com.example.flo.repository.CategoryRepository
 import com.example.flo.service.ProductService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,21 +13,28 @@ import java.math.BigDecimal
 
 @RestController
 @RequestMapping("/api/products")
-class ProductController(private val productService: ProductService) {
+class ProductController(
+  private val productService: ProductService,
+  private val categoryRepository: CategoryRepository
+) {
 
   @PostMapping
   fun createProduct(
     @RequestParam("name") name: String,
     @RequestParam("description") description: String,
-    @RequestParam("category") category: String,
+    @RequestParam("categoryIds") categoryIds: List<Long>,
     @RequestParam("price") price: BigDecimal,
     @RequestParam("status") status: String,
     @RequestParam("photos") photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
+    val categories: List<Category> = categoryIds.map { categoryRepository.findById(it)
+      .orElseThrow { Exception("Category not found") } }
+
+
     val product = Product(
       name = name,
       description = description,
-      category = category,
+      categories = categories,
       price = price,
       status = Status.valueOf(status.uppercase()),
       photos = null
@@ -54,5 +63,11 @@ class ProductController(private val productService: ProductService) {
   fun deleteProduct(@PathVariable id: Long): ResponseEntity<Void> {
     productService.deleteProduct(id)
     return ResponseEntity.noContent().build()
+  }
+
+  @GetMapping
+  fun getAllProducts(@RequestParam("categoryId", required = false) categoryId: Long?): ResponseEntity<List<Product>> {
+    val products = productService.getProductsByCategory(categoryId)
+    return ResponseEntity.ok(products)
   }
 }

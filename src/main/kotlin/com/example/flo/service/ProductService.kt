@@ -44,7 +44,7 @@ class ProductService(private val productRepository: ProductRepository) {
     val productToSave = existingProduct.copy(
       name = updatedProduct.name,
       description = updatedProduct.description,
-      category = updatedProduct.category,
+      categories = updatedProduct.categories,
       price = updatedProduct.price,
       status = updatedProduct.status,
       photos = photoPaths
@@ -56,5 +56,13 @@ class ProductService(private val productRepository: ProductRepository) {
     val product = getProductById(id)
     product.photos?.forEach { File(it).delete() }
     productRepository.deleteById(id)
+  }
+
+  fun getProductsByCategory(categoryId: Long?): List<Product> {
+    return if (categoryId != null) {
+      productRepository.findDistinctByCategories_IdIn(listOf(categoryId))
+    } else {
+      productRepository.findAll()
+    }
   }
 }
