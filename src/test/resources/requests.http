@@ -1,0 +1,19 @@
+POST http://localhost:8080/api/products?name=name&description=description&category=category&price=112&status=ACTIVE
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="photos"; filename="photo1.jpg"
+Content-Type: image/jpeg
+
+< ./photo_2024-05-23_12-31-48.jpg
+--boundary
+Content-Disposition: form-data; name="photos"; filename="photo2.png"
+Content-Type: image/jpeg
+
+< ./115308.png
+--boundary--
+
+###
+
+GET http://localhost:8080/api/products/3
+Accept: application/json

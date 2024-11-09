@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: flo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flo
+    username: Marta
+    password: flo_pass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
