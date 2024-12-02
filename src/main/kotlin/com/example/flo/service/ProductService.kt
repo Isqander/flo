@@ -1,6 +1,7 @@
 package com.example.flo.service
 
 import com.example.flo.model.Product
+import com.example.flo.model.Status
 import com.example.flo.repository.ProductRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -58,11 +59,11 @@ class ProductService(private val productRepository: ProductRepository) {
     productRepository.deleteById(id)
   }
 
-  fun getProductsByCategory(categoryId: Long?): List<Product> {
-    return if (categoryId != null) {
-      productRepository.findDistinctByCategories_IdIn(listOf(categoryId))
+  fun getProductsByFilters(categoryIds: List<Long>?, statuses: List<Status>): List<Product> {
+    return if (!categoryIds.isNullOrEmpty()) {
+      productRepository.findDistinctByCategories_IdInAndStatusIn(categoryIds, statuses)
     } else {
-      productRepository.findAll()
+      productRepository.findByStatusIn(statuses)
     }
   }
 }

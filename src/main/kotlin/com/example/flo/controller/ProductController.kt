@@ -66,8 +66,12 @@ class ProductController(
   }
 
   @GetMapping
-  fun getAllProducts(@RequestParam("categoryId", required = false) categoryId: Long?): ResponseEntity<List<Product>> {
-    val products = productService.getProductsByCategory(categoryId)
+  fun getAllProducts(
+    @RequestParam("categoryIds", required = false) categoryIds: List<Long>?,
+    @RequestParam("statuses", required = false, defaultValue = "ACTIVE") statuses: List<String>
+  ): ResponseEntity<List<Product>> {
+    val statusEnums = statuses.map { Status.valueOf(it.uppercase()) }
+    val products = productService.getProductsByFilters(categoryIds, statusEnums)
     return ResponseEntity.ok(products)
   }
 }
