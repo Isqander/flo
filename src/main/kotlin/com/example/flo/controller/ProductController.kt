@@ -1,5 +1,6 @@
 package com.example.flo.controller
 
+import com.example.flo.DTO.ProductDto
 import com.example.flo.model.Category
 import com.example.flo.model.Product
 import com.example.flo.model.Status
@@ -51,12 +52,23 @@ class ProductController(
 
   @PutMapping("/{id}")
   fun updateProduct(
-    @PathVariable id: Long,
-    @RequestBody updatedProduct: Product,
-    @RequestParam("photos", required = false) photos: List<MultipartFile>?
+      @PathVariable id: Long,
+      @RequestBody updatedProductDto: ProductDto,
+      @RequestParam("photos", required = false) photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
-    val product = productService.updateProduct(id, updatedProduct, photos)
-    return ResponseEntity.ok(product)
+    val categories = updatedProductDto.categoryIds.map { categoryRepository.findById(it)
+        .orElseThrow { Exception("Category not found") } }
+    val updatedProduct = Product(
+        id = id,
+        name = updatedProductDto.name,
+        description = updatedProductDto.description,
+        categories = categories,
+        price = updatedProductDto.price,
+        status = Status.valueOf(updatedProductDto.status),
+        photos = null
+    )
+    val savedProduct = productService.updateProduct(id, updatedProduct, photos)
+    return ResponseEntity.ok(savedProduct)
   }
 
   @DeleteMapping("/{id}")
