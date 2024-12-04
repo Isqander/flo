@@ -12,7 +12,10 @@ import java.nio.file.Paths
 import java.util.*
 
 @Service
-class ProductService(private val productRepository: ProductRepository) {
+class ProductService(
+    private val productRepository: ProductRepository,
+    private val photoService: PhotoService
+) {
 
   private val uploadDir: Path = Paths.get("uploads")
 
@@ -23,9 +26,9 @@ class ProductService(private val productRepository: ProductRepository) {
   fun saveProduct(product: Product, photos: List<MultipartFile>?): Product {
     val photoPaths = photos?.map { file ->
       val filename = UUID.randomUUID().toString() + "_" + file.originalFilename
-      val filepath = uploadDir.resolve(filename)
+      val filepath = photoService.uploadDir.resolve(filename)
       file.transferTo(filepath)
-      filepath.toString()
+      "/api/photos/$filename"
     }
     val productWithPhotos = product.copy(photos = photoPaths)
     return productRepository.save(productWithPhotos)

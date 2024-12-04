@@ -38,3 +38,8 @@ GET http://localhost:8080/api/products
 Accept: application/json
 
 ###
+
+DELETE http://localhost:8080/api/products/3
+Accept: application/json
+
+###
