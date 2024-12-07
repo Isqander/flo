@@ -14,7 +14,8 @@ import java.util.*
 @Service
 class ProductService(
     private val productRepository: ProductRepository,
-    private val photoService: PhotoService
+    private val photoService: PhotoService,
+    private val telegramService: TelegramService
 ) {
 
   private val uploadDir: Path = Paths.get("uploads")
@@ -31,7 +32,10 @@ class ProductService(
       "/api/photos/$filename"
     }
     val productWithPhotos = product.copy(photos = photoPaths)
-    return productRepository.save(productWithPhotos)
+    val savedProduct = productRepository.save(productWithPhotos)
+    telegramService.sendProductMessage(savedProduct)
+
+    return savedProduct
   }
 
   fun getProductById(id: Long): Product = productRepository.findById(id).orElseThrow { Exception("Product not found") }
