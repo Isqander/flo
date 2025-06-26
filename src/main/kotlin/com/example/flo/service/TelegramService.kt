@@ -73,4 +73,64 @@ class TelegramService(
             <b>Стоимость:</b> ${product.price}₽
         """.trimIndent()
     }
+
+    fun sendProductMessageToChat(chatId: String, product: Product) {
+        if (product.photos.isNullOrEmpty()) {
+            sendTextMessageToChat(chatId, buildMessage(product))
+        } else {
+            sendMediaGroupToChat(chatId, product)
+        }
+    }
+
+    fun sendTextMessageToChat(
+            chatId: String,
+            text: String,
+            replyMarkup: Any? = null // replyMarkup будем передавать при необходимости (inline-кнопки)
+    ) {
+        val url = "https://api.telegram.org/bot$telegramBotToken/sendMessage"
+
+        val requestBody = mutableMapOf<String, Any>(
+                "chat_id" to chatId,
+                "text" to text,
+                "parse_mode" to "HTML"
+        )
+
+        if (replyMarkup != null) {
+            requestBody["reply_markup"] = replyMarkup
+        }
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val entity = HttpEntity(requestBody, headers)
+        restTemplate.postForEntity(url, entity, String::class.java)
+    }
+
+    private fun sendMediaGroupToChat(chatId: String, product: Product) {
+        val url = "https://api.telegram.org/bot$telegramBotToken/sendMediaGroup"
+
+        val media = product.photos!!.mapIndexed { index, photoUrl ->
+            mutableMapOf(
+                    "type" to "photo",
+                    "media" to photoUrl // TODO: возможно, подставить полный URL, если нужно
+            ).apply {
+                if (index == 0) {
+                    this["caption"] = buildMessage(product)
+                    this["parse_mode"] = "HTML"
+                }
+            }
+        }
+
+        val request = mapOf(
+                "chat_id" to chatId,
+                "media" to media
+        )
+
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+        }
+
+        val entity = HttpEntity(request, headers)
+        restTemplate.postForEntity(url, entity, String::class.java)
+    }
 }
