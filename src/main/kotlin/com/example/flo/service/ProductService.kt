@@ -33,7 +33,7 @@ class ProductService(
     }
     val productWithPhotos = product.copy(photos = photoPaths)
     val savedProduct = productRepository.save(productWithPhotos)
-    telegramService.sendProductMessage(savedProduct)
+//    telegramService.sendProductMessage(savedProduct)  //TODO enable Telegram later. Send async (may be WebClient)
 
     return savedProduct
   }
