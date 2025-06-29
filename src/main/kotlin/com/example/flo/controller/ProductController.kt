@@ -7,10 +7,10 @@ import com.example.flo.model.Status
 import com.example.flo.repository.CategoryRepository
 import com.example.flo.service.ProductService
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.math.BigDecimal
 
 @RestController
 @RequestMapping("/api/products")
@@ -19,25 +19,22 @@ class ProductController(
   private val categoryRepository: CategoryRepository
 ) {
 
-  @PostMapping
+  @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
   fun createProduct(
-    @RequestParam("name") name: String,
-    @RequestParam("description") description: String,
-    @RequestParam("categoryIds") categoryIds: List<Long>,
-    @RequestParam("price") price: BigDecimal,
-    @RequestParam("status") status: String,
-    @RequestParam("photos") photos: List<MultipartFile>?
+    @RequestPart("product") productDto: ProductDto,
+    @RequestPart("photos", required = false) photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
-    val categories: List<Category> = categoryIds.map { categoryRepository.findById(it)
+
+
+    val categories: List<Category> = productDto.categoryIds.map { categoryRepository.findById(it)
       .orElseThrow { Exception("Category not found") } }
 
-
     val product = Product(
-      name = name,
-      description = description,
+      name = productDto.name,
+      description = productDto.description,
       categories = categories,
-      price = price,
-      status = Status.valueOf(status.uppercase()),
+      price = productDto.price,
+      status = Status.valueOf(productDto.status.uppercase()),
       photos = null
     )
     val savedProduct = productService.saveProduct(product, photos)
