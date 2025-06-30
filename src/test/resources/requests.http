@@ -24,39 +24,6 @@ Content-Type: image/jpeg
 < ./115308.png
 --boundary--
 
-###
-
-GET http://localhost:8080/api/products/6
-Accept: application/json
-
-###
-
-POST http://localhost:8080/api/categories
-Content-Type: application/json
-
-{
-  "name": "ботинки"
-}
-
-###
-
-GET http://localhost:8080/api/categories
-Accept: application/json
-
-###
-
-GET http://localhost:8080/api/products
-Accept: application/json
-
-###
-
-DELETE http://localhost:8080/api/products/3
-Accept: application/json
-
-###
-
-DELETE http://localhost:8080/api/categories/3
-Content-Type: application/json
 
 ###
 
@@ -74,3 +41,55 @@ Content-Type: application/json
   "price": 1000,
   "status": "ACTIVE"
 }
+
+###
+
+GET http://localhost:8080/api/products
+Accept: application/json
+
+###
+
+GET http://localhost:8080/api/products/6
+Accept: application/json
+
+
+###
+
+DELETE http://localhost:8080/api/products/3
+Accept: application/json
+###
+
+POST http://localhost:8080/api/categories
+Content-Type: application/json
+
+{
+  "name": "ботинки"
+}
+
+###
+
+GET http://localhost:8080/api/categories
+Accept: application/json
+
+###
+
+DELETE http://localhost:8080/api/categories/3
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "customerName": "Иван Smith",
+  "productIds": [1],
+  "email": "ivan@example.com",
+  "phone": "+7 999 123 45 67",
+  "telegramUsername": "@ivan_ivanov"
+}
+
+###
+
+GET http://localhost:8080/api/orders
+Accept: application/json

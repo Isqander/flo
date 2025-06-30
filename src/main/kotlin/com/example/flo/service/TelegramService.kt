@@ -22,6 +22,10 @@ class TelegramService(
         }
     }
 
+    fun sendOrderNotification(message: String) {
+        sendTextMessage(message)
+    }
+
     private fun sendMediaGroup(product: Product) {
         val url = "https://api.telegram.org/bot$telegramBotToken/sendMediaGroup"
 
@@ -50,7 +54,7 @@ class TelegramService(
         restTemplate.postForEntity(url, entity, String::class.java)
     }
 
-    private fun sendTextMessage(message: String) {
+    fun sendTextMessage(message: String) {
         val url = "https://api.telegram.org/bot$telegramBotToken/sendMessage"
 
         val request = mapOf(
