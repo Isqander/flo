@@ -1,10 +1,12 @@
 package com.example.flo.model
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "purchase_orders")
+@Schema(description = "Order entity representing customer purchases")
 data class Order(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -32,6 +34,14 @@ data class Order(
     val status: OrderStatus = OrderStatus.NEW
 )
 
+@Schema(description = "Enum representing different order statuses")
 enum class OrderStatus {
-    NEW, PROCESSING, COMPLETED, CANCELLED
+    @Schema(description = "New order that has just been placed")
+    NEW,
+    @Schema(description = "Order is being processed")
+    PROCESSING,
+    @Schema(description = "Order has been fulfilled and completed")
+    COMPLETED,
+    @Schema(description = "Order has been cancelled")
+    CANCELLED
 }
