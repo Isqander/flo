@@ -17,11 +17,6 @@ class OrderService(
 
     @Transactional
     fun createOrder(orderDto: OrderDto): Order {
-        // Validate that at least one contact method is provided
-        require(orderDto.email != null || orderDto.phone != null || orderDto.telegramUsername != null) {
-            "At least one contact method (email, phone, or telegram username) must be provided"
-        }
-
         // Get products by IDs
         val products = productRepository.findAllById(orderDto.productIds)
         if (products.size != orderDto.productIds.size) {
@@ -36,13 +31,14 @@ class OrderService(
             products = products,
             email = orderDto.email,
             phone = orderDto.phone,
-            telegramUsername = orderDto.telegramUsername
+            telegramUsername = orderDto.telegramUsername,
+            customerComment = orderDto.customerComment
         )
 
         val savedOrder = orderRepository.save(order)
 
         // Send notification via Telegram
-//        sendOrderNotification(savedOrder, products)
+        sendOrderNotification(savedOrder, products)
 
         return savedOrder
     }
@@ -68,6 +64,7 @@ class OrderService(
             ${order.email?.let { "<b>Email:</b> $it\n" } ?: ""}
             ${order.phone?.let { "<b>Телефон:</b> $it\n" } ?: ""}
             ${order.telegramUsername?.let { "<b>Telegram:</b> $it\n" } ?: ""}
+            ${order.customerComment?.let { "<b>Комментарий:</b> $it\n" } ?: ""}
 
             <b>Товары:</b>
             $productsList

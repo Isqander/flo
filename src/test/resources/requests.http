@@ -86,7 +86,8 @@ Content-Type: application/json
   "productIds": [1],
   "email": "ivan@example.com",
   "phone": "+7 999 123 45 67",
-  "telegramUsername": "@ivan_ivanov"
+  "telegramUsername": "@ivan_ivanov",
+  "customerComment": "Прошу доставить как можно скорее!"
 }
 
 ###

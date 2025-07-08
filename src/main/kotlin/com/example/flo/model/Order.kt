@@ -23,6 +23,9 @@ data class Order(
     val phone: String? = null,
     val telegramUsername: String? = null,
 
+    @Column(length = 1000)
+    val customerComment: String? = null,
+
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Enumerated(EnumType.STRING)
