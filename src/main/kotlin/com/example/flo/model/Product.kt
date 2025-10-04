@@ -13,7 +13,7 @@ data class Product(
   val id: Long = 0,
   val name: String,
   val description: String,
-  @ManyToMany(cascade = [(CascadeType.MERGE)])
+  @ManyToMany(cascade = [(CascadeType.MERGE)], fetch = FetchType.LAZY)
   @JoinTable(
     name = "product_category",
     joinColumns = [JoinColumn(name = "product_id")],
@@ -38,7 +38,7 @@ data class Category(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
-  @ManyToMany(mappedBy = "categories")
+  @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
   @JsonBackReference
   val products: List<Product> = listOf()
 )
