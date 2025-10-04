@@ -4,6 +4,12 @@ import com.example.flo.model.Status
 import com.example.flo.service.CategoryService
 import com.example.flo.service.ProductService
 import com.example.flo.service.TelegramService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -11,14 +17,23 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/telegram")
+@Tag(name = "Telegram Bot API", description = "Webhook endpoint for Telegram bot integration")
 class TelegramBotController(
         private val telegramService: TelegramService,
         private val categoryService: CategoryService,
         private val productService: ProductService
 ) {
 
+  @Operation(summary = "Handle Telegram bot updates", description = "Webhook endpoint for processing Telegram bot messages and callback queries")
+  @ApiResponses(value = [
+    ApiResponse(responseCode = "200", description = "Update processed successfully", content = [Content()]),
+    ApiResponse(responseCode = "400", description = "Invalid update format", content = [Content()])
+  ])
   @PostMapping("/updates")
-  fun handleUpdate(@RequestBody update: Map<String, Any>) {
+  fun handleUpdate(
+    @Parameter(description = "Telegram update object", required = true)
+    @RequestBody update: Map<String, Any>
+  ) {
     // Обратите внимание, что структура update может отличаться:
     // - если пришло обычное текстовое сообщение, это будет update["message"]
     // - если это нажатие на inline-кнопку, будет update["callback_query"]
