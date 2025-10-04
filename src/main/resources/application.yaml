@@ -2,13 +2,13 @@ spring:
   application:
     name: flo
   datasource:
-    url: jdbc:postgresql://localhost:5432/flo
-    username: Marta
-    password: flo_pass
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/flo}
+    username: ${DATABASE_USERNAME:Marta}
+    password: ${DATABASE_PASSWORD:flo_pass}
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DATABASE_DDL_AUTO:update}
+    show-sql: ${DATABASE_SHOW_SQL:true}
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

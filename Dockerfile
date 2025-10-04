@@ -1,22 +1,26 @@
-FROM gradle:7.6.1-jdk17-alpine AS build
-
+# Build stage
+FROM gradle:8.5-jdk21-alpine AS build
 WORKDIR /app
 
-COPY build.gradle settings.gradle gradlew ./
+# Copy gradle files
+COPY build.gradle settings.gradle ./
 COPY gradle gradle
 
-RUN ./gradlew dependencies
+# Copy source code
+COPY src src
 
-COPY . .
+# Build the application
+RUN gradle build -x test --no-daemon
 
-RUN ./gradlew build -x test
-
-FROM eclipse-temurin:17-jre-alpine
-
+# Runtime stage
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-COPY --from=build /app/build/libs/your-project-all.jar /app/app.jar
+# Copy the built jar from build stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
+# Expose port
 EXPOSE 8080
 
-CMD ["java", "-jar", "/app/app.jar"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
