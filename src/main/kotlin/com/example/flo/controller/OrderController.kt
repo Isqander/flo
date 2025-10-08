@@ -1,7 +1,9 @@
 package com.example.flo.controller
 
 import com.example.flo.DTO.OrderDto
+import com.example.flo.DTO.OrderUpdateDto
 import com.example.flo.model.Order
+import com.example.flo.model.OrderStatus
 import com.example.flo.service.OrderService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -61,5 +63,25 @@ class OrderController(private val orderService: OrderService) {
     fun getAllOrders(): ResponseEntity<List<Order>> {
         val orders = orderService.getAllOrders()
         return ResponseEntity.ok(orders)
+    }
+
+    @Operation(summary = "Update order status", description = "Update the status of an existing order")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Order updated successfully",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = Order::class))]),
+        ApiResponse(responseCode = "400", description = "Invalid input data", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Order not found", content = [Content()])
+    ])
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{id}")
+    fun updateOrderStatus(
+        @Parameter(description = "Order ID", required = true)
+        @PathVariable id: Long,
+        @Parameter(description = "Updated order status", required = true)
+        @RequestBody updateDto: OrderUpdateDto
+    ): ResponseEntity<Order> {
+        val status = OrderStatus.valueOf(updateDto.status.uppercase())
+        val updatedOrder = orderService.updateOrderStatus(id, status)
+        return ResponseEntity.ok(updatedOrder)
     }
 }
