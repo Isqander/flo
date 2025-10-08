@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,7 @@ class CategoryController(private val categoryService: CategoryService) {
             content = [Content(mediaType = "application/json", schema = Schema(implementation = Category::class))]),
         ApiResponse(responseCode = "400", description = "Invalid input data", content = [Content()])
     ])
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     fun createCategory(
         @Parameter(description = "Category data", required = true)
@@ -49,6 +51,7 @@ class CategoryController(private val categoryService: CategoryService) {
         ApiResponse(responseCode = "204", description = "Category deleted successfully", content = [Content()]),
         ApiResponse(responseCode = "404", description = "Category not found", content = [Content()])
     ])
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     fun deleteCategory(
         @Parameter(description = "Category ID", required = true)
