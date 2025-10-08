@@ -17,6 +17,6 @@ data class ProductDto(
     @Schema(description = "Product price", example = "1000")
     val price: BigDecimal,
 
-    @Schema(description = "Product status (ACTIVE, INACTIVE, SOLD)", example = "ACTIVE")
+    @Schema(description = "Product status (ACTIVE, INACTIVE, SOLD, BOOKED)", example = "ACTIVE")
     val status: String
 )

@@ -31,17 +31,15 @@ data class Order(
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Enumerated(EnumType.STRING)
-    val status: OrderStatus = OrderStatus.NEW
+    var status: OrderStatus = OrderStatus.NEW
 )
 
 @Schema(description = "Enum representing different order statuses")
 enum class OrderStatus {
     @Schema(description = "New order that has just been placed")
     NEW,
-    @Schema(description = "Order is being processed")
-    PROCESSING,
-    @Schema(description = "Order has been fulfilled and completed")
-    COMPLETED,
-    @Schema(description = "Order has been cancelled")
-    CANCELLED
+    @Schema(description = "Order has been completed")
+    COMPLITED,
+    @Schema(description = "Order has been rejected")
+    REJECTED
 }

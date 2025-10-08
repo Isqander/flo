@@ -2,7 +2,9 @@ package com.example.flo.service
 
 import com.example.flo.DTO.OrderDto
 import com.example.flo.model.Order
+import com.example.flo.model.OrderStatus
 import com.example.flo.model.Product
+import com.example.flo.model.Status
 import com.example.flo.repository.OrderRepository
 import com.example.flo.repository.ProductRepository
 import org.springframework.stereotype.Service
@@ -24,6 +26,9 @@ class OrderService(
             val missingIds = orderDto.productIds.filter { it !in foundIds }
             throw IllegalArgumentException("Products not found with ids: $missingIds")
         }
+
+        // Mark products as booked for the order
+        products.forEach { it.status = Status.BOOKED }
 
         // Create and save the order
         val order = Order(
@@ -51,6 +56,23 @@ class OrderService(
 
     fun getAllOrders(): List<Order> {
         return orderRepository.findAll()
+    }
+
+    @Transactional
+    fun updateOrderStatus(id: Long, newStatus: OrderStatus): Order {
+        val order = orderRepository.findById(id).orElseThrow {
+            IllegalArgumentException("Order not found with id: $id")
+        }
+
+        order.status = newStatus
+
+        when (newStatus) {
+            OrderStatus.NEW -> order.products.forEach { it.status = Status.BOOKED }
+            OrderStatus.COMPLITED -> order.products.forEach { it.status = Status.SOLD }
+            OrderStatus.REJECTED -> order.products.forEach { it.status = Status.ACTIVE }
+        }
+
+        return order
     }
 
     private fun sendOrderNotification(order: Order, products: List<Product>) {

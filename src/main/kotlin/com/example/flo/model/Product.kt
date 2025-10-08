@@ -23,13 +23,13 @@ data class Product(
   val categories: List<Category>,
   val price: BigDecimal,
   @Enumerated(EnumType.STRING)
-  val status: Status,
+  var status: Status,
   @ElementCollection
   val photos: List<String>?
 )
 
 enum class Status {
-  SOLD, ACTIVE, INACTIVE
+  SOLD, ACTIVE, INACTIVE, BOOKED
 }
 
 @Entity
