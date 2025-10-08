@@ -26,6 +26,13 @@ springdoc:
     license:
       name: Apache 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0
+security:
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:changeMe}
+  jwt:
+    secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef}
+    expiration: ${JWT_EXPIRATION:3600000}
 server:
   port: 8080
 

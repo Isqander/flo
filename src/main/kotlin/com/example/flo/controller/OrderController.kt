@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -55,6 +56,7 @@ class OrderController(private val orderService: OrderService) {
         ApiResponse(responseCode = "200", description = "List of orders",
             content = [Content(mediaType = "application/json", schema = Schema(implementation = Order::class))])
     ])
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     fun getAllOrders(): ResponseEntity<List<Order>> {
         val orders = orderService.getAllOrders()

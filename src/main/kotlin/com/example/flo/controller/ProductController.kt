@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -34,6 +35,7 @@ class ProductController(
     ApiResponse(responseCode = "400", description = "Invalid input data", content = [Content()]),
     ApiResponse(responseCode = "404", description = "Category not found", content = [Content()])
   ])
+  @SecurityRequirement(name = "bearerAuth")
   @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
   fun createProduct(
     @Parameter(description = "Product data", required = true)
@@ -80,6 +82,7 @@ class ProductController(
     ApiResponse(responseCode = "400", description = "Invalid input data", content = [Content()]),
     ApiResponse(responseCode = "404", description = "Product or category not found", content = [Content()])
   ])
+  @SecurityRequirement(name = "bearerAuth")
   @PutMapping("/{id}")
   fun updateProduct(
       @Parameter(description = "Product ID", required = true)
@@ -109,6 +112,7 @@ class ProductController(
     ApiResponse(responseCode = "204", description = "Product deleted successfully", content = [Content()]),
     ApiResponse(responseCode = "404", description = "Product not found", content = [Content()])
   ])
+  @SecurityRequirement(name = "bearerAuth")
   @DeleteMapping("/{id}")
   fun deleteProduct(
     @Parameter(description = "Product ID", required = true)
