@@ -99,6 +99,7 @@ class SecurityConfig(
                     "/docs"
                 ).permitAll()
                 auth.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                auth.requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
                 auth.requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                 auth.requestMatchers(HttpMethod.GET, "/api/orders").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.GET, "/api/orders/**").permitAll()
