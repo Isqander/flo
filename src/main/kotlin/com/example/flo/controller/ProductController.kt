@@ -8,6 +8,7 @@ import com.example.flo.repository.CategoryRepository
 import com.example.flo.service.ProductService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -83,14 +84,14 @@ class ProductController(
     ApiResponse(responseCode = "404", description = "Product or category not found", content = [Content()])
   ])
   @SecurityRequirement(name = "bearerAuth")
-  @PutMapping("/{id}")
+  @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
   fun updateProduct(
       @Parameter(description = "Product ID", required = true)
       @PathVariable id: Long,
       @Parameter(description = "Updated product data", required = true)
-      @RequestBody updatedProductDto: ProductDto,
+      @RequestPart("product") updatedProductDto: ProductDto,
       @Parameter(description = "Updated product photos (optional)")
-      @RequestParam("photos", required = false) photos: List<MultipartFile>?
+      @RequestPart("photos", required = false) photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
     val categories = updatedProductDto.categoryIds.map { categoryRepository.findById(it)
         .orElseThrow { Exception("Category not found") } }
@@ -125,7 +126,7 @@ class ProductController(
   @Operation(summary = "Get all products", description = "Returns all products with optional filtering by category and status")
   @ApiResponses(value = [
     ApiResponse(responseCode = "200", description = "List of products",
-      content = [Content(mediaType = "application/json", schema = Schema(implementation = Product::class))])
+      content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Product::class)))])
   ])
   @GetMapping
   fun getAllProducts(

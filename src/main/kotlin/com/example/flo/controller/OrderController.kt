@@ -5,6 +5,7 @@ import com.example.flo.model.Order
 import com.example.flo.service.OrderService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -54,7 +55,7 @@ class OrderController(private val orderService: OrderService) {
     @Operation(summary = "Get all orders", description = "Returns all orders in the system")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "List of orders",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = Order::class))])
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Order::class)))])
     ])
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
