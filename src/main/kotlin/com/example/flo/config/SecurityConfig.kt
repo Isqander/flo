@@ -1,6 +1,7 @@
 package com.example.flo.config
 
 import com.example.flo.security.JwtAuthenticationFilter
+import com.example.flo.security.JwtService
 import com.example.flo.security.SecurityProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 class SecurityConfig(
     private val securityProperties: SecurityProperties,
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtService: JwtService
 ) {
 
     @Bean
@@ -61,7 +62,9 @@ class SecurityConfig(
     }
 
     @Bean
-    fun apiFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun apiFilterChain(http: HttpSecurity, userDetailsService: UserDetailsService): SecurityFilterChain {
+        val jwtAuthenticationFilter = JwtAuthenticationFilter(jwtService, userDetailsService)
+
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
