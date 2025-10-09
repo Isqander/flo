@@ -73,6 +73,7 @@ class SecurityConfig(
             .cors { }
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
+                auth.requestMatchers(HttpMethod.OPTIONS).permitAll()
                 auth.anyRequest().authenticated()
             }
             .httpBasic { }
