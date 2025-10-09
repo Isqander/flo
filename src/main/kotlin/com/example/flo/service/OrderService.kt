@@ -68,8 +68,8 @@ class OrderService(
 
         when (newStatus) {
             OrderStatus.NEW -> order.products.forEach { it.status = Status.BOOKED }
-            OrderStatus.COMPLITED -> order.products.forEach { it.status = Status.SOLD }
-            OrderStatus.REJECTED -> order.products.forEach { it.status = Status.ACTIVE }
+            OrderStatus.COMPLETED -> order.products.forEach { it.status = Status.SOLD }
+            OrderStatus.CANCELED -> order.products.forEach { it.status = Status.ACTIVE }
         }
 
         return order

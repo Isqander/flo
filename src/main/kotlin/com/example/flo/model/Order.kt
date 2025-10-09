@@ -39,7 +39,7 @@ enum class OrderStatus {
     @Schema(description = "New order that has just been placed")
     NEW,
     @Schema(description = "Order has been completed")
-    COMPLITED,
-    @Schema(description = "Order has been rejected")
-    REJECTED
+    COMPLETED,
+    @Schema(description = "Order has been canceled")
+    CANCELED
 }
