@@ -4,6 +4,7 @@ import com.example.flo.model.Category
 import com.example.flo.service.CategoryService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -38,7 +39,7 @@ class CategoryController(private val categoryService: CategoryService) {
     @Operation(summary = "Get all categories", description = "Returns all product categories")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "List of categories",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = Category::class))])
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Category::class)))])
     ])
     @GetMapping
     fun getAllCategories(): ResponseEntity<List<Category>> {
