@@ -29,7 +29,7 @@ class ProductService(
       val filename = UUID.randomUUID().toString() + "_" + file.originalFilename
       val filepath = photoService.uploadDir.resolve(filename)
       file.transferTo(filepath)
-      "/api/photos/$filename"
+      filename
     }
     val productWithPhotos = product.copy(photos = photoPaths)
     val savedProduct = productRepository.save(productWithPhotos)
@@ -46,7 +46,7 @@ class ProductService(
       val filename = UUID.randomUUID().toString() + "_" + file.originalFilename
       val filepath = uploadDir.resolve(filename)
       file.transferTo(filepath)
-      "/api/photos/$filename"
+      filename
     } ?: existingProduct.photos
 
     val productToSave = existingProduct.copy(
@@ -62,9 +62,7 @@ class ProductService(
 
   fun deleteProduct(id: Long) {
     val product = getProductById(id)
-    product.photos?.forEach { photoPath ->
-      // Extract filename from "/api/photos/filename.jpg"
-      val filename = photoPath.substringAfterLast("/")
+    product.photos?.forEach { filename ->
       val file = uploadDir.resolve(filename).toFile()
       if (file.exists()) {
         file.delete()
