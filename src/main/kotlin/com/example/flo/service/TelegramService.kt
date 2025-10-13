@@ -14,7 +14,14 @@ class TelegramService(
     private val telegramChatId: String
 ) {
 
+    private val isTelegramConfigured: Boolean
+        get() = telegramBotToken.isNotBlank() && telegramChatId.isNotBlank()
+
     fun sendProductMessage(product: Product) {
+        if (!isTelegramConfigured) {
+            println("Telegram not configured, skipping notification")
+            return
+        }
         if (product.photos.isNullOrEmpty()) {
             sendTextMessage(buildMessage(product))
         } else {
@@ -55,6 +62,11 @@ class TelegramService(
     }
 
     fun sendTextMessage(message: String) {
+        if (!isTelegramConfigured) {
+            println("Telegram not configured, skipping message: $message")
+            return
+        }
+
         val url = "https://api.telegram.org/bot$telegramBotToken/sendMessage"
 
         val request = mapOf(

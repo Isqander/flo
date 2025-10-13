@@ -42,8 +42,13 @@ class OrderService(
 
         val savedOrder = orderRepository.save(order)
 
-        // Send notification via Telegram
-        sendOrderNotification(savedOrder, products)
+        // Send notification via Telegram (non-blocking, errors logged but don't fail the order)
+        try {
+            sendOrderNotification(savedOrder, products)
+        } catch (e: Exception) {
+            // Log the error but don't fail the order creation
+            println("Failed to send Telegram notification: ${e.message}")
+        }
 
         return savedOrder
     }
