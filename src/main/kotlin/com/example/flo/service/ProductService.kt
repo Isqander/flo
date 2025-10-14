@@ -52,10 +52,21 @@ class ProductService(
   fun getProductById(id: Long): Product = productRepository.findById(id)
     .orElseThrow { ResourceNotFoundException("Product not found with id: $id") }
 
-  fun updateProduct(id: Long, updatedProduct: Product, photos: List<MultipartFile>?): Product {
+  fun updateProduct(id: Long, updatedProduct: Product, photos: List<MultipartFile>?, photosToDelete: List<String>?): Product {
     val existingProduct = getProductById(id)
 
-    val photoPaths = try {
+    // Delete specified photos from disk and remove from list
+    val remainingPhotos = existingProduct.photos?.toMutableList() ?: mutableListOf()
+    photosToDelete?.forEach { filename ->
+      val file = uploadDir.resolve(filename).toFile()
+      if (file.exists()) {
+        file.delete()
+      }
+      remainingPhotos.remove(filename)
+    }
+
+    // Add new photos to existing ones
+    val newPhotoPaths = try {
       photos?.map { file ->
         if (file.isEmpty) {
           throw BadRequestException("One or more uploaded files are empty")
@@ -64,10 +75,13 @@ class ProductService(
         val filepath = uploadDir.resolve(filename)
         file.transferTo(filepath)
         filename
-      } ?: existingProduct.photos
+      } ?: emptyList()
     } catch (e: IOException) {
       throw BadRequestException("Failed to upload photos: ${e.message}")
     }
+
+    // Combine remaining and new photos
+    val allPhotos = remainingPhotos + newPhotoPaths
 
     val productToSave = existingProduct.copy(
       name = updatedProduct.name,
@@ -75,7 +89,7 @@ class ProductService(
       categories = updatedProduct.categories,
       price = updatedProduct.price,
       status = updatedProduct.status,
-      photos = photoPaths
+      photos = allPhotos.ifEmpty { null }
     )
     return productRepository.save(productToSave)
   }

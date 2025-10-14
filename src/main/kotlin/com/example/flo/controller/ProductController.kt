@@ -84,7 +84,7 @@ class ProductController(
     return ResponseEntity.ok(product)
   }
 
-  @Operation(summary = "Update a product", description = "Update an existing product by ID")
+  @Operation(summary = "Update a product", description = "Update an existing product by ID. New photos are added to existing ones. Specify photo filenames to delete in photosToDelete.")
   @ApiResponses(value = [
     ApiResponse(responseCode = "200", description = "Product updated successfully",
       content = [Content(mediaType = "application/json", schema = Schema(implementation = Product::class))]),
@@ -98,8 +98,10 @@ class ProductController(
       @PathVariable id: Long,
       @Parameter(description = "Updated product data", required = true)
       @RequestPart("product") updatedProductDto: ProductDto,
-      @Parameter(description = "Updated product photos (optional)")
-      @RequestPart("photos", required = false) photos: List<MultipartFile>?
+      @Parameter(description = "New product photos to add (optional)")
+      @RequestPart("photos", required = false) photos: List<MultipartFile>?,
+      @Parameter(description = "List of photo filenames to delete (optional)")
+      @RequestPart("photosToDelete", required = false) photosToDelete: List<String>?
   ): ResponseEntity<Product> {
     val categories = updatedProductDto.categoryIds.map {
       categoryRepository.findById(it)
@@ -121,7 +123,7 @@ class ProductController(
         status = status,
         photos = null
     )
-    val savedProduct = productService.updateProduct(id, updatedProduct, photos)
+    val savedProduct = productService.updateProduct(id, updatedProduct, photos, photosToDelete)
     return ResponseEntity.ok(savedProduct)
   }
 
