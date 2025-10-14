@@ -2,6 +2,7 @@ package com.example.flo.controller
 
 import com.example.flo.DTO.OrderDto
 import com.example.flo.DTO.OrderUpdateDto
+import com.example.flo.exception.BadRequestException
 import com.example.flo.model.Order
 import com.example.flo.model.OrderStatus
 import com.example.flo.service.OrderService
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -33,7 +35,7 @@ class OrderController(private val orderService: OrderService) {
     @PostMapping
     fun createOrder(
         @Parameter(description = "Order data", required = true)
-        @RequestBody orderDto: OrderDto
+        @Valid @RequestBody orderDto: OrderDto
     ): ResponseEntity<Order> {
         val order = orderService.createOrder(orderDto)
         return ResponseEntity(order, HttpStatus.CREATED)
@@ -79,9 +81,13 @@ class OrderController(private val orderService: OrderService) {
         @Parameter(description = "Order ID", required = true)
         @PathVariable id: Long,
         @Parameter(description = "Updated order status", required = true)
-        @RequestBody updateDto: OrderUpdateDto
+        @Valid @RequestBody updateDto: OrderUpdateDto
     ): ResponseEntity<Order> {
-        val status = OrderStatus.valueOf(updateDto.status.uppercase())
+        val status = try {
+            OrderStatus.valueOf(updateDto.status.uppercase())
+        } catch (e: IllegalArgumentException) {
+            throw BadRequestException("Invalid order status: '${updateDto.status}'. Valid values are: ${OrderStatus.values().joinToString()}")
+        }
         val updatedOrder = orderService.updateOrderStatus(id, status)
         return ResponseEntity.ok(updatedOrder)
     }

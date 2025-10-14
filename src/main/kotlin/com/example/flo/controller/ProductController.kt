@@ -1,6 +1,8 @@
 package com.example.flo.controller
 
 import com.example.flo.DTO.ProductDto
+import com.example.flo.exception.BadRequestException
+import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Category
 import com.example.flo.model.Product
 import com.example.flo.model.Status
@@ -44,17 +46,23 @@ class ProductController(
     @Parameter(description = "Product photos (optional)")
     @RequestPart("photos", required = false) photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
+    val categories: List<Category> = productDto.categoryIds.map {
+      categoryRepository.findById(it)
+        .orElseThrow { ResourceNotFoundException("Category not found with id: $it") }
+    }
 
-
-    val categories: List<Category> = productDto.categoryIds.map { categoryRepository.findById(it)
-      .orElseThrow { Exception("Category not found") } }
+    val status = try {
+      Status.valueOf(productDto.status.uppercase())
+    } catch (e: IllegalArgumentException) {
+      throw BadRequestException("Invalid product status: '${productDto.status}'. Valid values are: ${Status.values().joinToString()}")
+    }
 
     val product = Product(
       name = productDto.name,
       description = productDto.description,
       categories = categories,
       price = productDto.price,
-      status = Status.valueOf(productDto.status.uppercase()),
+      status = status,
       photos = null
     )
     val savedProduct = productService.saveProduct(product, photos)
@@ -93,15 +101,24 @@ class ProductController(
       @Parameter(description = "Updated product photos (optional)")
       @RequestPart("photos", required = false) photos: List<MultipartFile>?
   ): ResponseEntity<Product> {
-    val categories = updatedProductDto.categoryIds.map { categoryRepository.findById(it)
-        .orElseThrow { Exception("Category not found") } }
+    val categories = updatedProductDto.categoryIds.map {
+      categoryRepository.findById(it)
+        .orElseThrow { ResourceNotFoundException("Category not found with id: $it") }
+    }
+
+    val status = try {
+      Status.valueOf(updatedProductDto.status.uppercase())
+    } catch (e: IllegalArgumentException) {
+      throw BadRequestException("Invalid product status: '${updatedProductDto.status}'. Valid values are: ${Status.values().joinToString()}")
+    }
+
     val updatedProduct = Product(
         id = id,
         name = updatedProductDto.name,
         description = updatedProductDto.description,
         categories = categories,
         price = updatedProductDto.price,
-        status = Status.valueOf(updatedProductDto.status),
+        status = status,
         photos = null
     )
     val savedProduct = productService.updateProduct(id, updatedProduct, photos)
@@ -135,7 +152,11 @@ class ProductController(
     @Parameter(description = "Filter by product statuses (default: ACTIVE)")
     @RequestParam("statuses", required = false, defaultValue = "ACTIVE") statuses: List<String>
   ): ResponseEntity<List<Product>> {
-    val statusEnums = statuses.map { Status.valueOf(it.uppercase()) }
+    val statusEnums = try {
+      statuses.map { Status.valueOf(it.uppercase()) }
+    } catch (e: IllegalArgumentException) {
+      throw BadRequestException("Invalid product status in filter. Valid values are: ${Status.values().joinToString()}")
+    }
     val products = productService.getProductsByFilters(categoryIds, statusEnums)
     return ResponseEntity.ok(products)
   }

@@ -1,5 +1,18 @@
+### Получение JWT токена (используйте этот запрос первым)
+### После выполнения скопируйте токен из ответа и вставьте в переменную token ниже
+POST http://localhost:8080/api/auth/token
+Authorization: Basic admin changeMe
+
+###
+
+### Переменная для хранения токена (замените YOUR_TOKEN_HERE на реальный токен из предыдущего запроса)
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MDQyMzA1NiwiZXhwIjoxNzYwNDI2NjU2fQ.BICEjqsKLgJ8lt6J80EWaswl4RmUEx1D7CDtMgt-CO4
+
+###
+
 POST http://localhost:8080/api/products
 Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
 
 --boundary
 Content-Disposition: form-data; name="product"
@@ -7,8 +20,8 @@ Content-Type: application/json
 
 {
   "name": "таби",
-  "description": "носкиДляЯпонцев",
-  "categoryIds": [2],
+  "description": "носкиДляЯпонцевСвото",
+  "categoryIds": [1],
   "price": 1000,
   "status": "ACTIVE"
 }
@@ -29,6 +42,7 @@ Content-Type: image/jpeg
 
 POST http://localhost:8080/api/products
 Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
 
 --boundary
 Content-Disposition: form-data; name="product"
@@ -37,7 +51,7 @@ Content-Type: application/json
 {
   "name": "таби",
   "description": "носкиДляЯпонцев",
-  "categoryIds": [2],
+  "categoryIds": [1],
   "price": 1000,
   "status": "ACTIVE"
 }
@@ -55,12 +69,15 @@ Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/api/products/3
+DELETE http://localhost:8080/api/products/5
 Accept: application/json
+Authorization: Bearer {{token}}
+
 ###
 
 POST http://localhost:8080/api/categories
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "ботинки"
@@ -73,8 +90,9 @@ Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/api/categories/3
+DELETE http://localhost:8080/api/categories/4
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 ###
 
@@ -94,3 +112,4 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/orders
 Accept: application/json
+Authorization: Bearer {{token}}

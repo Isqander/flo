@@ -1,6 +1,8 @@
 package com.example.flo.service
 
 import com.example.flo.DTO.OrderDto
+import com.example.flo.exception.BadRequestException
+import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Order
 import com.example.flo.model.OrderStatus
 import com.example.flo.model.Product
@@ -19,12 +21,24 @@ class OrderService(
 
     @Transactional
     fun createOrder(orderDto: OrderDto): Order {
+        // Validate that product IDs are provided
+        if (orderDto.productIds.isEmpty()) {
+            throw BadRequestException("Order must contain at least one product")
+        }
+
         // Get products by IDs
         val products = productRepository.findAllById(orderDto.productIds)
         if (products.size != orderDto.productIds.size) {
             val foundIds = products.map { it.id }
             val missingIds = orderDto.productIds.filter { it !in foundIds }
-            throw IllegalArgumentException("Products not found with ids: $missingIds")
+            throw ResourceNotFoundException("Products not found with ids: $missingIds")
+        }
+
+        // Check if any products are already booked or sold
+        val unavailableProducts = products.filter { it.status != Status.ACTIVE }
+        if (unavailableProducts.isNotEmpty()) {
+            val unavailableIds = unavailableProducts.map { "${it.id} (${it.status})" }
+            throw BadRequestException("Some products are not available: $unavailableIds")
         }
 
         // Mark products as booked for the order
@@ -55,7 +69,7 @@ class OrderService(
 
     fun getOrderById(id: Long): Order {
         return orderRepository.findById(id).orElseThrow {
-            IllegalArgumentException("Order not found with id: $id")
+            ResourceNotFoundException("Order not found with id: $id")
         }
     }
 
@@ -66,7 +80,7 @@ class OrderService(
     @Transactional
     fun updateOrderStatus(id: Long, newStatus: OrderStatus): Order {
         val order = orderRepository.findById(id).orElseThrow {
-            IllegalArgumentException("Order not found with id: $id")
+            ResourceNotFoundException("Order not found with id: $id")
         }
 
         order.status = newStatus
