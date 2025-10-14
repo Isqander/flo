@@ -6,7 +6,7 @@ Authorization: Basic admin changeMe
 ###
 
 ### Переменная для хранения токена (замените YOUR_TOKEN_HERE на реальный токен из предыдущего запроса)
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MDQyMzA1NiwiZXhwIjoxNzYwNDI2NjU2fQ.BICEjqsKLgJ8lt6J80EWaswl4RmUEx1D7CDtMgt-CO4
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MDQyOTI5NiwiZXhwIjoxNzYwNDMyODk2fQ.2HowIcsR6EB5gqnw-IerJnjlL6WScHeOXgAS698-sHg
 
 ###
 
@@ -55,6 +55,106 @@ Content-Type: application/json
   "price": 1000,
   "status": "ACTIVE"
 }
+
+###
+
+### Update product - only update data (photos remain unchanged)
+PUT http://localhost:8080/api/products/1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+
+--boundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "таби обновленные",
+  "description": "носкиДляЯпонцев",
+  "categoryIds": [1],
+  "price": 1200,
+  "status": "ACTIVE"
+}
+--boundary--
+
+###
+
+### Update product - add new photos (old photos are kept)
+PUT http://localhost:8080/api/products/1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+
+--boundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "таби",
+  "description": "носкиДляЯпонцев",
+  "categoryIds": [1],
+  "price": 1000,
+  "status": "ACTIVE"
+}
+--boundary
+Content-Disposition: form-data; name="photos"; filename="newphoto.jpg"
+Content-Type: image/jpeg
+
+< ./photo_2024-05-23_12-31-48.jpg
+--boundary--
+
+###
+
+### Update product - delete specific photos (specify filenames from product.photos array)
+PUT http://localhost:8080/api/products/1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+
+--boundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "таби",
+  "description": "носкиДляЯпонцев",
+  "categoryIds": [1],
+  "price": 1000,
+  "status": "ACTIVE"
+}
+--boundary
+Content-Disposition: form-data; name="photosToDelete"
+Content-Type: application/json
+
+["old-filename-1.jpg", "old-filename-2.png"]
+--boundary--
+
+###
+
+### Update product - add new photos AND delete old ones
+PUT http://localhost:8080/api/products/1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+
+--boundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "таби",
+  "description": "носкиДляЯпонцев",
+  "categoryIds": [1],
+  "price": 1000,
+  "status": "ACTIVE"
+}
+--boundary
+Content-Disposition: form-data; name="photos"; filename="newphoto.jpg"
+Content-Type: image/jpeg
+
+< ./photo_2024-05-23_12-31-48.jpg
+--boundary
+Content-Disposition: form-data; name="photosToDelete"
+Content-Type: application/json
+
+["old-filename-to-delete.jpg"]
+--boundary--
 
 ###
 
