@@ -21,6 +21,14 @@ data class Product(
   )
   @JsonManagedReference
   val categories: List<Category>,
+  @ManyToMany(cascade = [(CascadeType.MERGE)], fetch = FetchType.LAZY)
+  @JoinTable(
+    name = "product_size",
+    joinColumns = [JoinColumn(name = "product_id")],
+    inverseJoinColumns = [JoinColumn(name = "size_id")]
+  )
+  @JsonManagedReference
+  val sizes: List<Size> = listOf(),
   val price: BigDecimal,
   @Enumerated(EnumType.STRING)
   var status: Status,
@@ -39,6 +47,17 @@ data class Category(
   val id: Long = 0,
   val name: String,
   @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+  @JsonBackReference
+  val products: List<Product> = listOf()
+)
+
+@Entity
+@Schema(description = "Size entity representing product sizes")
+data class Size(
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  val id: Long = 0,
+  val name: String,
+  @ManyToMany(mappedBy = "sizes", fetch = FetchType.LAZY)
   @JsonBackReference
   val products: List<Product> = listOf()
 )
