@@ -1,6 +1,7 @@
 package com.example.flo.exception
 
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -9,9 +10,16 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
+
+    @Value("\${spring.servlet.multipart.max-file-size}")
+    private lateinit var maxFileSize: String
+
+    @Value("\${spring.servlet.multipart.max-request-size}")
+    private lateinit var maxRequestSize: String
 
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleResourceNotFoundException(
@@ -39,6 +47,26 @@ class GlobalExceptionHandler {
             path = request.requestURI
         )
         return ResponseEntity(error, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun handleMaxUploadSizeExceededException(
+        ex: MaxUploadSizeExceededException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val message = if (ex.message?.contains("maximum upload size") == true) {
+            "Превышен максимальный размер запроса. Максимум: $maxRequestSize"
+        } else {
+            "Превышен максимальный размер файла. Максимум на один файл: $maxFileSize, максимум на весь запрос: $maxRequestSize"
+        }
+
+        val error = ErrorResponse(
+            status = HttpStatus.PAYLOAD_TOO_LARGE.value(),
+            error = "File Too Large",
+            message = message,
+            path = request.requestURI
+        )
+        return ResponseEntity(error, HttpStatus.PAYLOAD_TOO_LARGE)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
