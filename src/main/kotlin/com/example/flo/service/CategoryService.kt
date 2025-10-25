@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service
 @Service
 class CategoryService(private val categoryRepository: CategoryRepository) {
   fun saveCategory(category: Category): Category = categoryRepository.save(category)
-  fun getAllCategories(): List<Category> = categoryRepository.findAll()
+  fun getAllCategories(): List<Category> = categoryRepository.findByDeletedFalse()
   fun deleteCategoryById(id: Long) {
-    if (!categoryRepository.existsById(id)) {
-      throw ResourceNotFoundException("Category not found with id: $id")
-    }
-    categoryRepository.deleteById(id)
+    val category = categoryRepository.findById(id)
+      .orElseThrow { ResourceNotFoundException("Category not found with id: $id") }
+
+    // Soft delete: mark as deleted instead of physically removing
+    categoryRepository.save(category.copy(deleted = true))
   }
 }

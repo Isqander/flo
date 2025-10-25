@@ -46,6 +46,7 @@ data class Category(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
+  val deleted: Boolean = false,
   @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
   @JsonBackReference
   val products: List<Product> = listOf()
@@ -57,6 +58,7 @@ data class Size(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
+  val deleted: Boolean = false,
   @ManyToMany(mappedBy = "sizes", fetch = FetchType.LAZY)
   @JsonBackReference
   val products: List<Product> = listOf()
