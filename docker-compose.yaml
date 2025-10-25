@@ -13,6 +13,8 @@ services:
       - DATABASE_SHOW_SQL=true
     depends_on:
       - postgres
+    volumes:
+      - uploads-data:/app/uploads
     networks:
       - flo-network
 
@@ -35,3 +37,4 @@ networks:
 
 volumes:
   postgres-data:
+  uploads-data:
