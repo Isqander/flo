@@ -87,6 +87,7 @@ class ProductService(
       name = updatedProduct.name,
       description = updatedProduct.description,
       categories = updatedProduct.categories,
+      sizes = updatedProduct.sizes,
       price = updatedProduct.price,
       status = updatedProduct.status,
       photos = allPhotos.ifEmpty { null }

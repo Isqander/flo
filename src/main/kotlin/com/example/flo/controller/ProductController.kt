@@ -5,8 +5,10 @@ import com.example.flo.exception.BadRequestException
 import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Category
 import com.example.flo.model.Product
+import com.example.flo.model.Size
 import com.example.flo.model.Status
 import com.example.flo.repository.CategoryRepository
+import com.example.flo.repository.SizeRepository
 import com.example.flo.service.ProductService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -28,7 +30,8 @@ import org.springframework.web.multipart.MultipartFile
 @Tag(name = "Product API", description = "API for managing products")
 class ProductController(
   private val productService: ProductService,
-  private val categoryRepository: CategoryRepository
+  private val categoryRepository: CategoryRepository,
+  private val sizeRepository: SizeRepository
 ) {
 
   @Operation(summary = "Create a new product", description = "Create a new product with optional photos")
@@ -51,6 +54,11 @@ class ProductController(
         .orElseThrow { ResourceNotFoundException("Category not found with id: $it") }
     }
 
+    val sizes: List<Size> = productDto.sizeIds.map {
+      sizeRepository.findById(it)
+        .orElseThrow { ResourceNotFoundException("Size not found with id: $it") }
+    }
+
     val status = try {
       Status.valueOf(productDto.status.uppercase())
     } catch (e: IllegalArgumentException) {
@@ -61,6 +69,7 @@ class ProductController(
       name = productDto.name,
       description = productDto.description,
       categories = categories,
+      sizes = sizes,
       price = productDto.price,
       status = status,
       photos = null
@@ -108,6 +117,11 @@ class ProductController(
         .orElseThrow { ResourceNotFoundException("Category not found with id: $it") }
     }
 
+    val sizes: List<Size> = updatedProductDto.sizeIds.map {
+      sizeRepository.findById(it)
+        .orElseThrow { ResourceNotFoundException("Size not found with id: $it") }
+    }
+
     val status = try {
       Status.valueOf(updatedProductDto.status.uppercase())
     } catch (e: IllegalArgumentException) {
@@ -119,6 +133,7 @@ class ProductController(
         name = updatedProductDto.name,
         description = updatedProductDto.description,
         categories = categories,
+        sizes = sizes,
         price = updatedProductDto.price,
         status = status,
         photos = null

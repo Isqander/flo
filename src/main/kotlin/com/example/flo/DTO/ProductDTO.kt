@@ -14,6 +14,9 @@ data class ProductDto(
     @Schema(description = "List of category IDs the product belongs to", example = "[1, 2]")
     val categoryIds: List<Long>,
 
+    @Schema(description = "List of size IDs the product is available in", example = "[1, 3, 5]")
+    val sizeIds: List<Long> = emptyList(),
+
     @Schema(description = "Product price", example = "1000")
     val price: BigDecimal,
 
