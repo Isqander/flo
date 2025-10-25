@@ -1,6 +1,7 @@
 package com.example.flo.controller
 
 import com.example.flo.DTO.ProductDto
+import com.example.flo.DTO.ProductListDto
 import com.example.flo.exception.BadRequestException
 import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Category
@@ -157,10 +158,10 @@ class ProductController(
     return ResponseEntity.noContent().build()
   }
 
-  @Operation(summary = "Get all products", description = "Returns all products with optional filtering by category and status")
+  @Operation(summary = "Get all products", description = "Returns all products with thumbnails, with optional filtering by category and status")
   @ApiResponses(value = [
-    ApiResponse(responseCode = "200", description = "List of products",
-      content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Product::class)))])
+    ApiResponse(responseCode = "200", description = "List of products with thumbnails",
+      content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ProductListDto::class)))])
   ])
   @GetMapping
   fun getAllProducts(
@@ -168,13 +169,14 @@ class ProductController(
     @RequestParam("categoryIds", required = false) categoryIds: List<Long>?,
     @Parameter(description = "Filter by product statuses (default: ACTIVE)")
     @RequestParam("statuses", required = false, defaultValue = "ACTIVE") statuses: List<String>
-  ): ResponseEntity<List<Product>> {
+  ): ResponseEntity<List<ProductListDto>> {
     val statusEnums = try {
       statuses.map { Status.valueOf(it.uppercase()) }
     } catch (e: IllegalArgumentException) {
       throw BadRequestException("Invalid product status in filter. Valid values are: ${Status.values().joinToString()}")
     }
     val products = productService.getProductsByFilters(categoryIds, statusEnums)
-    return ResponseEntity.ok(products)
+    val productListDtos = products.map { ProductListDto.fromProduct(it) }
+    return ResponseEntity.ok(productListDtos)
   }
 }

@@ -5,9 +5,9 @@ import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Product
 import com.example.flo.model.Status
 import com.example.flo.repository.ProductRepository
+import net.coobird.thumbnailator.Thumbnails
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -27,6 +27,20 @@ class ProductService(
     Files.createDirectories(uploadDir)
   }
 
+  private fun createThumbnail(originalFilePath: Path, filename: String) {
+    try {
+      val thumbnailName = "thumb_$filename"
+      val thumbnailPath = uploadDir.resolve(thumbnailName)
+
+      Thumbnails.of(originalFilePath.toFile())
+        .size(300, 300)
+        .outputQuality(0.85)
+        .toFile(thumbnailPath.toFile())
+    } catch (e: IOException) {
+      throw BadRequestException("Failed to create thumbnail for $filename: ${e.message}")
+    }
+  }
+
   fun saveProduct(product: Product, photos: List<MultipartFile>?): Product {
     val photoPaths = try {
       photos?.map { file ->
@@ -36,6 +50,10 @@ class ProductService(
         val filename = UUID.randomUUID().toString() + "_" + file.originalFilename
         val filepath = photoService.uploadDir.resolve(filename)
         file.transferTo(filepath)
+
+        // Create thumbnail
+        createThumbnail(filepath, filename)
+
         filename
       }
     } catch (e: IOException) {
@@ -58,9 +76,15 @@ class ProductService(
     // Delete specified photos from disk and remove from list
     val remainingPhotos = existingProduct.photos?.toMutableList() ?: mutableListOf()
     photosToDelete?.forEach { filename ->
+      // Delete original photo
       val file = uploadDir.resolve(filename).toFile()
       if (file.exists()) {
         file.delete()
+      }
+      // Delete thumbnail
+      val thumbnailFile = uploadDir.resolve("thumb_$filename").toFile()
+      if (thumbnailFile.exists()) {
+        thumbnailFile.delete()
       }
       remainingPhotos.remove(filename)
     }
@@ -74,6 +98,10 @@ class ProductService(
         val filename = UUID.randomUUID().toString() + "_" + file.originalFilename
         val filepath = uploadDir.resolve(filename)
         file.transferTo(filepath)
+
+        // Create thumbnail
+        createThumbnail(filepath, filename)
+
         filename
       } ?: emptyList()
     } catch (e: IOException) {
@@ -98,9 +126,15 @@ class ProductService(
   fun deleteProduct(id: Long) {
     val product = getProductById(id)
     product.photos?.forEach { filename ->
+      // Delete original photo
       val file = uploadDir.resolve(filename).toFile()
       if (file.exists()) {
         file.delete()
+      }
+      // Delete thumbnail
+      val thumbnailFile = uploadDir.resolve("thumb_$filename").toFile()
+      if (thumbnailFile.exists()) {
+        thumbnailFile.delete()
       }
     }
     productRepository.deleteById(id)
