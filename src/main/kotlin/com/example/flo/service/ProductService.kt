@@ -33,8 +33,8 @@ class ProductService(
       val thumbnailPath = uploadDir.resolve(thumbnailName)
 
       Thumbnails.of(originalFilePath.toFile())
-        .size(300, 300)
-        .outputQuality(0.85)
+        .size(500, 500)
+        .outputQuality(0.95)
         .toFile(thumbnailPath.toFile())
     } catch (e: IOException) {
       throw BadRequestException("Failed to create thumbnail for $filename: ${e.message}")
