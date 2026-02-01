@@ -4,5 +4,5 @@ import com.example.flo.model.Size
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface SizeRepository : JpaRepository<Size, Long> {
-    fun findByDeletedFalse(): List<Size>
+    fun findByDeletedFalseOrderBySortOrderAsc(): List<Size>
 }

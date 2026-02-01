@@ -1,5 +1,6 @@
 package com.example.flo.controller
 
+import com.example.flo.DTO.ReorderIdsDto
 import com.example.flo.model.Size
 import com.example.flo.service.SizeService
 import io.swagger.v3.oas.annotations.Operation
@@ -36,7 +37,7 @@ class SizeController(private val sizeService: SizeService) {
         return ResponseEntity(savedSize, HttpStatus.CREATED)
     }
 
-    @Operation(summary = "Get all sizes", description = "Returns all product sizes")
+    @Operation(summary = "Get all sizes", description = "Returns all product sizes ordered by sortOrder")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "List of sizes",
             content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Size::class)))])
@@ -44,6 +45,23 @@ class SizeController(private val sizeService: SizeService) {
     @GetMapping
     fun getAllSizes(): ResponseEntity<List<Size>> {
         val sizes = sizeService.getAllSizes()
+        return ResponseEntity.ok(sizes)
+    }
+
+    @Operation(summary = "Reorder sizes", description = "Update the display order of sizes by providing a list of size IDs in the desired order")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Sizes reordered successfully",
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Size::class)))]),
+        ApiResponse(responseCode = "400", description = "Invalid input (e.g. empty ids)", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "One or more size IDs not found", content = [Content()])
+    ])
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/reorder")
+    fun reorderSizes(
+        @Parameter(description = "Size IDs in the desired order", required = true)
+        @RequestBody body: ReorderIdsDto
+    ): ResponseEntity<List<Size>> {
+        val sizes = sizeService.reorderSizes(body.ids)
         return ResponseEntity.ok(sizes)
     }
 
