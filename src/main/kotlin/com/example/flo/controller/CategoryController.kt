@@ -1,5 +1,6 @@
 package com.example.flo.controller
 
+import com.example.flo.DTO.ReorderIdsDto
 import com.example.flo.model.Category
 import com.example.flo.service.CategoryService
 import io.swagger.v3.oas.annotations.Operation
@@ -36,7 +37,7 @@ class CategoryController(private val categoryService: CategoryService) {
         return ResponseEntity(savedCategory, HttpStatus.CREATED)
     }
 
-    @Operation(summary = "Get all categories", description = "Returns all product categories")
+    @Operation(summary = "Get all categories", description = "Returns all product categories ordered by sortOrder")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "List of categories",
             content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Category::class)))])
@@ -44,6 +45,23 @@ class CategoryController(private val categoryService: CategoryService) {
     @GetMapping
     fun getAllCategories(): ResponseEntity<List<Category>> {
         val categories = categoryService.getAllCategories()
+        return ResponseEntity.ok(categories)
+    }
+
+    @Operation(summary = "Reorder categories", description = "Update the display order of categories by providing a list of category IDs in the desired order")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Categories reordered successfully",
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Category::class)))]),
+        ApiResponse(responseCode = "400", description = "Invalid input (e.g. empty ids)", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "One or more category IDs not found", content = [Content()])
+    ])
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/reorder")
+    fun reorderCategories(
+        @Parameter(description = "Category IDs in the desired order", required = true)
+        @RequestBody body: ReorderIdsDto
+    ): ResponseEntity<List<Category>> {
+        val categories = categoryService.reorderCategories(body.ids)
         return ResponseEntity.ok(categories)
     }
 

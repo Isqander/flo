@@ -108,6 +108,7 @@ class SecurityConfig(
                 auth.requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                 auth.requestMatchers(HttpMethod.PUT, "/api/orders/**").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
+                auth.requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
