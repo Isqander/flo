@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -35,9 +36,11 @@ class OrderController(private val orderService: OrderService) {
     @PostMapping
     fun createOrder(
         @Parameter(description = "Order data", required = true)
-        @Valid @RequestBody orderDto: OrderDto
+        @Valid @RequestBody orderDto: OrderDto,
+        session: HttpSession
     ): ResponseEntity<Order> {
         val order = orderService.createOrder(orderDto)
+        orderService.addOrderToSession(session, order.id)
         return ResponseEntity(order, HttpStatus.CREATED)
     }
 
@@ -47,13 +50,45 @@ class OrderController(private val orderService: OrderService) {
             content = [Content(mediaType = "application/json", schema = Schema(implementation = Order::class))]),
         ApiResponse(responseCode = "404", description = "Order not found", content = [Content()])
     ])
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     fun getOrderById(
         @Parameter(description = "Order ID", required = true)
         @PathVariable id: Long
     ): ResponseEntity<Order> {
         val order = orderService.getOrderById(id)
         return ResponseEntity.ok(order)
+    }
+
+    @Operation(
+        summary = "Get current customer orders",
+        description = "Returns current session orders. If contact filters are provided, also returns matched orders by contact data"
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "List of customer orders",
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Order::class)))])
+    ])
+    @GetMapping("/my")
+    fun getMyOrders(
+        @Parameter(description = "Customer email", required = false)
+        @RequestParam(required = false) email: String?,
+        @Parameter(description = "Customer phone", required = false)
+        @RequestParam(required = false) phone: String?,
+        @Parameter(description = "Customer Telegram username", required = false)
+        @RequestParam(required = false) telegramUsername: String?,
+        session: HttpSession
+    ): ResponseEntity<List<Order>> {
+        val sessionOrders = orderService.getOrdersFromSession(session)
+        val hasContactFilters = !email.isNullOrBlank() || !phone.isNullOrBlank() || !telegramUsername.isNullOrBlank()
+        if (!hasContactFilters) {
+            return ResponseEntity.ok(sessionOrders)
+        }
+
+        val matchedByContact = orderService.getCustomerOrders(email, phone, telegramUsername)
+        val mergedOrders = (sessionOrders + matchedByContact)
+            .distinctBy { it.id }
+            .sortedByDescending { it.createdAt }
+
+        return ResponseEntity.ok(mergedOrders)
     }
 
     @Operation(summary = "Get all orders", description = "Returns all orders in the system")

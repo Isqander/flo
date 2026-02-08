@@ -210,6 +210,18 @@ Content-Type: application/json
 
 ###
 
+### Получить заказы клиента (публичный endpoint, нужен хотя бы один фильтр)
+GET http://localhost:8080/api/orders/my?email=ivan@example.com
+Accept: application/json
+
+###
+
+### Получить заказы текущей сессии (после создания заказа в этой же сессии)
+GET http://localhost:8080/api/orders/my
+Accept: application/json
+
+###
+
 GET http://localhost:8080/api/orders
 Accept: application/json
 Authorization: Bearer {{token}}

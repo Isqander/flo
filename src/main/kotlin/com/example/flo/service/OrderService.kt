@@ -9,6 +9,7 @@ import com.example.flo.model.Product
 import com.example.flo.model.Status
 import com.example.flo.repository.OrderRepository
 import com.example.flo.repository.ProductRepository
+import jakarta.servlet.http.HttpSession
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -77,6 +78,35 @@ class OrderService(
         return orderRepository.findAll()
     }
 
+    fun addOrderToSession(session: HttpSession, orderId: Long) {
+        val existingIds = getSessionOrderIds(session).toMutableList()
+        existingIds.remove(orderId)
+        existingIds.add(0, orderId)
+        session.setAttribute(SESSION_ORDER_IDS_KEY, existingIds.take(MAX_SESSION_ORDER_IDS))
+    }
+
+    fun getOrdersFromSession(session: HttpSession): List<Order> {
+        val ids = getSessionOrderIds(session)
+        if (ids.isEmpty()) return emptyList()
+        return orderRepository.findAllById(ids).sortedByDescending { it.createdAt }
+    }
+
+    fun getCustomerOrders(email: String?, phone: String?, telegramUsername: String?): List<Order> {
+        val normalizedEmail = email?.trim()?.takeIf { it.isNotEmpty() }
+        val normalizedPhone = phone?.trim()?.takeIf { it.isNotEmpty() }
+        val normalizedTelegram = telegramUsername?.trim()?.takeIf { it.isNotEmpty() }
+
+        if (normalizedEmail == null && normalizedPhone == null && normalizedTelegram == null) {
+            throw BadRequestException("At least one filter is required: email, phone, or telegramUsername")
+        }
+
+        return orderRepository.findCustomerOrders(
+            email = normalizedEmail,
+            phone = normalizedPhone,
+            telegramUsername = normalizedTelegram
+        )
+    }
+
     @Transactional
     fun updateOrderStatus(id: Long, newStatus: OrderStatus): Order {
         val order = orderRepository.findById(id).orElseThrow {
@@ -115,5 +145,21 @@ class OrderService(
         """.trimIndent()
 
         telegramService.sendTextMessage(message)
+    }
+
+    private fun getSessionOrderIds(session: HttpSession): List<Long> {
+        val raw = session.getAttribute(SESSION_ORDER_IDS_KEY) as? List<*> ?: return emptyList()
+        return raw.mapNotNull { value ->
+            when (value) {
+                is Number -> value.toLong()
+                is String -> value.toLongOrNull()
+                else -> null
+            }
+        }.distinct()
+    }
+
+    companion object {
+        private const val SESSION_ORDER_IDS_KEY = "customerOrderIds"
+        private const val MAX_SESSION_ORDER_IDS = 100
     }
 }
