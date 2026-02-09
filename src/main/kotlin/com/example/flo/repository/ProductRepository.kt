@@ -8,4 +8,6 @@ interface ProductRepository : JpaRepository<Product, Long> {
   fun findDistinctByCategories_IdInAndStatusIn(categoryIds: List<Long>, statuses: List<Status>): List<Product>
 
   fun findByStatusIn(statuses: List<Status>): List<Product>
+
+  fun findByIsNewTrueAndStatusNotIn(statuses: List<Status>): List<Product>
 }

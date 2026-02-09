@@ -27,6 +27,9 @@ data class ProductListDto(
     @Schema(description = "Product price", example = "1000")
     val price: BigDecimal,
 
+    @Schema(description = "Whether product is marked as new", example = "true")
+    val isNew: Boolean,
+
     @Schema(description = "Product status")
     val status: Status,
 
@@ -42,6 +45,7 @@ data class ProductListDto(
                 categories = product.categories,
                 sizes = product.sizes,
                 price = product.price,
+                isNew = product.isNew,
                 status = product.status,
                 thumbnails = product.photos?.map { "thumb_$it" }
             )

@@ -13,6 +13,8 @@ data class Product(
   val id: Long = 0,
   val name: String,
   val description: String,
+  @Column(name = "is_new", nullable = false)
+  val isNew: Boolean = false,
   @ManyToMany(cascade = [(CascadeType.MERGE)], fetch = FetchType.LAZY)
   @JoinTable(
     name = "product_category",

@@ -20,6 +20,9 @@ data class ProductDto(
     @Schema(description = "Product price", example = "1000")
     val price: BigDecimal,
 
+    @Schema(description = "Whether product is marked as new", example = "true")
+    val isNew: Boolean = false,
+
     @Schema(description = "Product status (ACTIVE, INACTIVE, SOLD, BOOKED)", example = "ACTIVE")
     val status: String
 )

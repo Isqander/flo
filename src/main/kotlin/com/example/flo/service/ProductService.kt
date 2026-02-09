@@ -20,6 +20,7 @@ class ProductService(
     private val photoService: PhotoService,
     private val telegramService: TelegramService
 ) {
+  private val hiddenInNewProductsStatuses = listOf(Status.SOLD, Status.BOOKED)
 
   private val uploadDir: Path = Paths.get("uploads")
 
@@ -114,6 +115,7 @@ class ProductService(
     val productToSave = existingProduct.copy(
       name = updatedProduct.name,
       description = updatedProduct.description,
+      isNew = updatedProduct.isNew,
       categories = updatedProduct.categories,
       sizes = updatedProduct.sizes,
       price = updatedProduct.price,
@@ -146,5 +148,9 @@ class ProductService(
     } else {
       productRepository.findByStatusIn(statuses)
     }
+  }
+
+  fun getNewProducts(): List<Product> {
+    return productRepository.findByIsNewTrueAndStatusNotIn(hiddenInNewProductsStatuses)
   }
 }

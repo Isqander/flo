@@ -69,6 +69,7 @@ class ProductController(
     val product = Product(
       name = productDto.name,
       description = productDto.description,
+      isNew = productDto.isNew,
       categories = categories,
       sizes = sizes,
       price = productDto.price,
@@ -133,6 +134,7 @@ class ProductController(
         id = id,
         name = updatedProductDto.name,
         description = updatedProductDto.description,
+        isNew = updatedProductDto.isNew,
         categories = categories,
         sizes = sizes,
         price = updatedProductDto.price,
@@ -176,6 +178,18 @@ class ProductController(
       throw BadRequestException("Invalid product status in filter. Valid values are: ${Status.values().joinToString()}")
     }
     val products = productService.getProductsByFilters(categoryIds, statusEnums)
+    val productListDtos = products.map { ProductListDto.fromProduct(it) }
+    return ResponseEntity.ok(productListDtos)
+  }
+
+  @Operation(summary = "Get all new products", description = "Returns products marked as new. Sold and booked products are excluded.")
+  @ApiResponses(value = [
+    ApiResponse(responseCode = "200", description = "List of new products with thumbnails",
+      content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ProductListDto::class)))])
+  ])
+  @GetMapping("/new")
+  fun getNewProducts(): ResponseEntity<List<ProductListDto>> {
+    val products = productService.getNewProducts()
     val productListDtos = products.map { ProductListDto.fromProduct(it) }
     return ResponseEntity.ok(productListDtos)
   }
