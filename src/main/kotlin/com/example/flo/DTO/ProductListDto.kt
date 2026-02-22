@@ -1,5 +1,6 @@
 package com.example.flo.DTO
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.example.flo.model.Category
 import com.example.flo.model.Product
 import com.example.flo.model.Size
@@ -28,6 +29,8 @@ data class ProductListDto(
     val price: BigDecimal,
 
     @Schema(description = "Whether product is marked as new", example = "true")
+    @get:JsonProperty("isNew")
+    @param:JsonProperty("isNew")
     val isNew: Boolean,
 
     @Schema(description = "Product status")

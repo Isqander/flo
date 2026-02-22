@@ -1,5 +1,6 @@
 package com.example.flo.DTO
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
@@ -21,6 +22,8 @@ data class ProductDto(
     val price: BigDecimal,
 
     @Schema(description = "Whether product is marked as new", example = "true")
+    @get:JsonProperty("isNew")
+    @param:JsonProperty("isNew")
     val isNew: Boolean = false,
 
     @Schema(description = "Product status (ACTIVE, INACTIVE, SOLD, BOOKED)", example = "ACTIVE")

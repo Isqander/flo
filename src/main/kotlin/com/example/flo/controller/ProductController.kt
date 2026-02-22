@@ -86,7 +86,7 @@ class ProductController(
       content = [Content(mediaType = "application/json", schema = Schema(implementation = Product::class))]),
     ApiResponse(responseCode = "404", description = "Product not found", content = [Content()])
   ])
-  @GetMapping("/{id}")
+  @GetMapping("/{id:[0-9]+}")
   fun getProductById(
     @Parameter(description = "Product ID", required = true)
     @PathVariable id: Long
@@ -103,7 +103,7 @@ class ProductController(
     ApiResponse(responseCode = "404", description = "Product or category not found", content = [Content()])
   ])
   @SecurityRequirement(name = "bearerAuth")
-  @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+  @PutMapping("/{id:[0-9]+}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
   fun updateProduct(
       @Parameter(description = "Product ID", required = true)
       @PathVariable id: Long,
@@ -151,7 +151,7 @@ class ProductController(
     ApiResponse(responseCode = "404", description = "Product not found", content = [Content()])
   ])
   @SecurityRequirement(name = "bearerAuth")
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{id:[0-9]+}")
   fun deleteProduct(
     @Parameter(description = "Product ID", required = true)
     @PathVariable id: Long

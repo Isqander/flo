@@ -2,6 +2,7 @@ package com.example.flo.model
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import java.math.BigDecimal
@@ -14,6 +15,8 @@ data class Product(
   val name: String,
   val description: String,
   @Column(name = "is_new", nullable = false)
+  @get:JsonProperty("isNew")
+  @param:JsonProperty("isNew")
   val isNew: Boolean = false,
   @ManyToMany(cascade = [(CascadeType.MERGE)], fetch = FetchType.LAZY)
   @JoinTable(
