@@ -7,8 +7,11 @@ spring:
     password: ${DATABASE_PASSWORD:flo_pass}
   jpa:
     hibernate:
-      ddl-auto: ${DATABASE_DDL_AUTO:update}
+      ddl-auto: ${DATABASE_DDL_AUTO:validate}
     show-sql: ${DATABASE_SHOW_SQL:true}
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
   servlet:
     multipart:
       max-file-size: 10MB

@@ -14,7 +14,7 @@ data class Product(
   val id: Long = 0,
   val name: String,
   val description: String,
-  @Column(name = "is_new", nullable = false)
+  @Column(name = "is_new", nullable = false, columnDefinition = "boolean default false not null")
   @get:JsonProperty("isNew")
   @param:JsonProperty("isNew")
   val isNew: Boolean = false,
