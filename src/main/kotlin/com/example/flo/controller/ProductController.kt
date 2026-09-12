@@ -11,6 +11,7 @@ import com.example.flo.model.Status
 import com.example.flo.repository.CategoryRepository
 import com.example.flo.repository.SizeRepository
 import com.example.flo.service.ProductService
+import com.example.flo.service.LocalizationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -68,7 +69,17 @@ class ProductController(
 
     val product = Product(
       name = productDto.name,
+      nameEn = productDto.nameEn,
+      nameRu = productDto.nameRu,
+      nameZh = productDto.nameZh,
+      nameEs = productDto.nameEs,
+      nameKa = productDto.nameKa,
       description = productDto.description,
+      descriptionEn = productDto.descriptionEn,
+      descriptionRu = productDto.descriptionRu,
+      descriptionZh = productDto.descriptionZh,
+      descriptionEs = productDto.descriptionEs,
+      descriptionKa = productDto.descriptionKa,
       isNew = productDto.isNew,
       categories = categories,
       sizes = sizes,
@@ -89,10 +100,12 @@ class ProductController(
   @GetMapping("/{id:[0-9]+}")
   fun getProductById(
     @Parameter(description = "Product ID", required = true)
-    @PathVariable id: Long
+    @PathVariable id: Long,
+    @RequestHeader(name = "Accept-Language", required = false) acceptLanguage: String?
   ): ResponseEntity<Product> {
     val product = productService.getProductById(id)
-    return ResponseEntity.ok(product)
+    val language = LocalizationService.resolveLanguage(acceptLanguage)
+    return ResponseEntity.ok(LocalizationService.localizeProduct(product, language))
   }
 
   @Operation(summary = "Update a product", description = "Update an existing product by ID. New photos are added to existing ones. Specify photo filenames to delete in photosToDelete.")
@@ -133,7 +146,17 @@ class ProductController(
     val updatedProduct = Product(
         id = id,
         name = updatedProductDto.name,
+        nameEn = updatedProductDto.nameEn,
+        nameRu = updatedProductDto.nameRu,
+        nameZh = updatedProductDto.nameZh,
+        nameEs = updatedProductDto.nameEs,
+        nameKa = updatedProductDto.nameKa,
         description = updatedProductDto.description,
+        descriptionEn = updatedProductDto.descriptionEn,
+        descriptionRu = updatedProductDto.descriptionRu,
+        descriptionZh = updatedProductDto.descriptionZh,
+        descriptionEs = updatedProductDto.descriptionEs,
+        descriptionKa = updatedProductDto.descriptionKa,
         isNew = updatedProductDto.isNew,
         categories = categories,
         sizes = sizes,
@@ -170,7 +193,8 @@ class ProductController(
     @Parameter(description = "Filter by category IDs (optional)")
     @RequestParam("categoryIds", required = false) categoryIds: List<Long>?,
     @Parameter(description = "Filter by product statuses (default: ACTIVE)")
-    @RequestParam("statuses", required = false, defaultValue = "ACTIVE") statuses: List<String>
+    @RequestParam("statuses", required = false, defaultValue = "ACTIVE") statuses: List<String>,
+    @RequestHeader(name = "Accept-Language", required = false) acceptLanguage: String?
   ): ResponseEntity<List<ProductListDto>> {
     val statusEnums = try {
       statuses.map { Status.valueOf(it.uppercase()) }
@@ -178,7 +202,8 @@ class ProductController(
       throw BadRequestException("Invalid product status in filter. Valid values are: ${Status.values().joinToString()}")
     }
     val products = productService.getProductsByFilters(categoryIds, statusEnums)
-    val productListDtos = products.map { ProductListDto.fromProduct(it) }
+    val language = LocalizationService.resolveLanguage(acceptLanguage)
+    val productListDtos = products.map { ProductListDto.fromProduct(it, language) }
     return ResponseEntity.ok(productListDtos)
   }
 
@@ -188,9 +213,12 @@ class ProductController(
       content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ProductListDto::class)))])
   ])
   @GetMapping("/new")
-  fun getNewProducts(): ResponseEntity<List<ProductListDto>> {
+  fun getNewProducts(
+    @RequestHeader(name = "Accept-Language", required = false) acceptLanguage: String?
+  ): ResponseEntity<List<ProductListDto>> {
     val products = productService.getNewProducts()
-    val productListDtos = products.map { ProductListDto.fromProduct(it) }
+    val language = LocalizationService.resolveLanguage(acceptLanguage)
+    val productListDtos = products.map { ProductListDto.fromProduct(it, language) }
     return ResponseEntity.ok(productListDtos)
   }
 }

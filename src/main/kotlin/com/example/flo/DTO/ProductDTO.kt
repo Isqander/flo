@@ -9,8 +9,38 @@ data class ProductDto(
     @Schema(description = "Product name", example = "Tabi Socks")
     val name: String,
 
+    @Schema(description = "English product name (optional; falls back to the legacy name)")
+    val nameEn: String? = null,
+
+    @Schema(description = "Russian product name (optional; falls back to English)")
+    val nameRu: String? = null,
+
+    @Schema(description = "Chinese product name (optional; falls back to English)")
+    val nameZh: String? = null,
+
+    @Schema(description = "Spanish product name (optional; falls back to English)")
+    val nameEs: String? = null,
+
+    @Schema(description = "Georgian product name (optional; falls back to English)")
+    val nameKa: String? = null,
+
     @Schema(description = "Product description", example = "Traditional Japanese split-toe socks")
     val description: String,
+
+    @Schema(description = "English product description (optional; falls back to the legacy description)")
+    val descriptionEn: String? = null,
+
+    @Schema(description = "Russian product description (optional; falls back to English)")
+    val descriptionRu: String? = null,
+
+    @Schema(description = "Chinese product description (optional; falls back to English)")
+    val descriptionZh: String? = null,
+
+    @Schema(description = "Spanish product description (optional; falls back to English)")
+    val descriptionEs: String? = null,
+
+    @Schema(description = "Georgian product description (optional; falls back to English)")
+    val descriptionKa: String? = null,
 
     @Schema(description = "List of category IDs the product belongs to", example = "[1, 2]")
     val categoryIds: List<Long>,

@@ -5,6 +5,8 @@ import com.example.flo.model.Category
 import com.example.flo.model.Product
 import com.example.flo.model.Size
 import com.example.flo.model.Status
+import com.example.flo.service.LocalizationService
+import com.example.flo.service.SupportedLanguage
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
@@ -40,17 +42,21 @@ data class ProductListDto(
     val thumbnails: List<String>?
 ) {
     companion object {
-        fun fromProduct(product: Product): ProductListDto {
+        fun fromProduct(
+            product: Product,
+            language: SupportedLanguage = SupportedLanguage.EN
+        ): ProductListDto {
+            val localizedProduct = LocalizationService.localizeProduct(product, language)
             return ProductListDto(
-                id = product.id,
-                name = product.name,
-                description = product.description,
-                categories = product.categories,
-                sizes = product.sizes,
-                price = product.price,
-                isNew = product.isNew,
-                status = product.status,
-                thumbnails = product.photos?.map { "thumb_$it" }
+                id = localizedProduct.id,
+                name = localizedProduct.name,
+                description = localizedProduct.description,
+                categories = localizedProduct.categories,
+                sizes = localizedProduct.sizes,
+                price = localizedProduct.price,
+                isNew = localizedProduct.isNew,
+                status = localizedProduct.status,
+                thumbnails = localizedProduct.photos?.map { "thumb_$it" }
             )
         }
     }

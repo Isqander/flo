@@ -13,7 +13,27 @@ data class Product(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
+  @Column(name = "name_en")
+  val nameEn: String? = null,
+  @Column(name = "name_ru")
+  val nameRu: String? = null,
+  @Column(name = "name_zh")
+  val nameZh: String? = null,
+  @Column(name = "name_es")
+  val nameEs: String? = null,
+  @Column(name = "name_ka")
+  val nameKa: String? = null,
   val description: String,
+  @Column(name = "description_en")
+  val descriptionEn: String? = null,
+  @Column(name = "description_ru")
+  val descriptionRu: String? = null,
+  @Column(name = "description_zh")
+  val descriptionZh: String? = null,
+  @Column(name = "description_es")
+  val descriptionEs: String? = null,
+  @Column(name = "description_ka")
+  val descriptionKa: String? = null,
   @Column(name = "is_new", nullable = false, columnDefinition = "boolean default false not null")
   @get:JsonProperty("isNew")
   @param:JsonProperty("isNew")
@@ -51,6 +71,16 @@ data class Category(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
+  @Column(name = "name_en")
+  val nameEn: String? = null,
+  @Column(name = "name_ru")
+  val nameRu: String? = null,
+  @Column(name = "name_zh")
+  val nameZh: String? = null,
+  @Column(name = "name_es")
+  val nameEs: String? = null,
+  @Column(name = "name_ka")
+  val nameKa: String? = null,
   @Column(columnDefinition = "integer default 0 not null")
   val sortOrder: Int = 0,
   val deleted: Boolean = false,
@@ -65,6 +95,16 @@ data class Size(
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0,
   val name: String,
+  @Column(name = "name_en")
+  val nameEn: String? = null,
+  @Column(name = "name_ru")
+  val nameRu: String? = null,
+  @Column(name = "name_zh")
+  val nameZh: String? = null,
+  @Column(name = "name_es")
+  val nameEs: String? = null,
+  @Column(name = "name_ka")
+  val nameKa: String? = null,
   @Column(columnDefinition = "integer default 0 not null")
   val sortOrder: Int = 0,
   val deleted: Boolean = false,

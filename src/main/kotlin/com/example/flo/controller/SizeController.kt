@@ -3,6 +3,7 @@ package com.example.flo.controller
 import com.example.flo.DTO.ReorderIdsDto
 import com.example.flo.model.Size
 import com.example.flo.service.SizeService
+import com.example.flo.service.LocalizationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -43,9 +44,12 @@ class SizeController(private val sizeService: SizeService) {
             content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Size::class)))])
     ])
     @GetMapping
-    fun getAllSizes(): ResponseEntity<List<Size>> {
+    fun getAllSizes(
+        @RequestHeader(name = "Accept-Language", required = false) acceptLanguage: String?
+    ): ResponseEntity<List<Size>> {
         val sizes = sizeService.getAllSizes()
-        return ResponseEntity.ok(sizes)
+        val language = LocalizationService.resolveLanguage(acceptLanguage)
+        return ResponseEntity.ok(sizes.map { LocalizationService.localizeSize(it, language) })
     }
 
     @Operation(summary = "Reorder sizes", description = "Update the display order of sizes by providing a list of size IDs in the desired order")

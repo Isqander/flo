@@ -114,7 +114,17 @@ class ProductService(
 
     val productToSave = existingProduct.copy(
       name = updatedProduct.name,
+      nameEn = updatedProduct.nameEn ?: existingProduct.nameEn,
+      nameRu = updatedProduct.nameRu ?: existingProduct.nameRu,
+      nameZh = updatedProduct.nameZh ?: existingProduct.nameZh,
+      nameEs = updatedProduct.nameEs ?: existingProduct.nameEs,
+      nameKa = updatedProduct.nameKa ?: existingProduct.nameKa,
       description = updatedProduct.description,
+      descriptionEn = updatedProduct.descriptionEn ?: existingProduct.descriptionEn,
+      descriptionRu = updatedProduct.descriptionRu ?: existingProduct.descriptionRu,
+      descriptionZh = updatedProduct.descriptionZh ?: existingProduct.descriptionZh,
+      descriptionEs = updatedProduct.descriptionEs ?: existingProduct.descriptionEs,
+      descriptionKa = updatedProduct.descriptionKa ?: existingProduct.descriptionKa,
       isNew = updatedProduct.isNew,
       categories = updatedProduct.categories,
       sizes = updatedProduct.sizes,

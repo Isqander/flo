@@ -3,6 +3,7 @@ package com.example.flo.controller
 import com.example.flo.DTO.ReorderIdsDto
 import com.example.flo.model.Category
 import com.example.flo.service.CategoryService
+import com.example.flo.service.LocalizationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -43,9 +44,12 @@ class CategoryController(private val categoryService: CategoryService) {
             content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Category::class)))])
     ])
     @GetMapping
-    fun getAllCategories(): ResponseEntity<List<Category>> {
+    fun getAllCategories(
+        @RequestHeader(name = "Accept-Language", required = false) acceptLanguage: String?
+    ): ResponseEntity<List<Category>> {
         val categories = categoryService.getAllCategories()
-        return ResponseEntity.ok(categories)
+        val language = LocalizationService.resolveLanguage(acceptLanguage)
+        return ResponseEntity.ok(categories.map { LocalizationService.localizeCategory(it, language) })
     }
 
     @Operation(summary = "Reorder categories", description = "Update the display order of categories by providing a list of category IDs in the desired order")
