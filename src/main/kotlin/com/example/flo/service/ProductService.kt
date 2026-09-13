@@ -8,6 +8,7 @@ import com.example.flo.model.Currency
 import com.example.flo.repository.ProductRepository
 import net.coobird.thumbnailator.Thumbnails
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.nio.file.Files
@@ -137,6 +138,7 @@ class ProductService(
     return productRepository.save(productToSave)
   }
 
+  @Transactional
   fun deleteProduct(id: Long) {
     val product = getProductById(id)
     product.photos?.forEach { filename ->
@@ -151,6 +153,9 @@ class ProductService(
         thumbnailFile.delete()
       }
     }
+    // Orders are historical records, but their join-table links must be removed
+    // before deleting the product to satisfy the foreign-key constraint.
+    productRepository.deleteOrderProductLinks(id)
     productRepository.deleteById(id)
   }
 
