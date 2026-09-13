@@ -87,13 +87,16 @@ class CurrencyRateService(
       ratesToEur.map { (currency, rate) -> CurrencyRate(currency, rate, fetchedAt) }
     )
 
-    val rubRateToEur = ratesToEur.getValue(Currency.RUB)
+    // The normalized rates are expressed as units of the target currency per EUR
+    // (for example, RUB = 97.88 means 1 EUR = 97.88 RUB). A legacy RUB price
+    // therefore has to be divided by this rate to obtain its EUR value.
+    val rubUnitsPerEur = ratesToEur.getValue(Currency.RUB)
     val legacyProducts = productRepository.findByPriceCurrency(Currency.RUB)
     if (legacyProducts.isNotEmpty()) {
       productRepository.saveAll(
         legacyProducts.map { product ->
           product.copy(
-            price = product.price.multiply(rubRateToEur).setScale(2, RoundingMode.HALF_UP),
+            price = product.price.divide(rubUnitsPerEur, 2, RoundingMode.HALF_UP),
             priceCurrency = Currency.EUR
           )
         }
