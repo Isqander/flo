@@ -44,6 +44,11 @@ security:
 server:
   port: 8080
 
+currency:
+  api-url: "${CURRENCY_API_URL:https://open.er-api.com/v6/latest/USD}"
+  refresh-cron: "${CURRENCY_REFRESH_CRON:0 0 8,9,13 * * *}"
+  initial-conversion-enabled: ${CURRENCY_INITIAL_CONVERSION_ENABLED:true}
+
 telegram:
   bot-token: ''
   chat-id: ''

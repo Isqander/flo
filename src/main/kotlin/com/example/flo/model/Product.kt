@@ -54,7 +54,11 @@ data class Product(
   )
   @JsonManagedReference
   val sizes: List<Size> = listOf(),
+  @field:Schema(description = "Product price stored in EUR", example = "120.00")
   val price: BigDecimal,
+  @Enumerated(EnumType.STRING)
+  @Column(name = "price_currency", length = 3, nullable = false)
+  val priceCurrency: Currency = Currency.EUR,
   @Enumerated(EnumType.STRING)
   var status: Status,
   @ElementCollection

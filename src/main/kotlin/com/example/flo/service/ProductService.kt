@@ -4,6 +4,7 @@ import com.example.flo.exception.BadRequestException
 import com.example.flo.exception.ResourceNotFoundException
 import com.example.flo.model.Product
 import com.example.flo.model.Status
+import com.example.flo.model.Currency
 import com.example.flo.repository.ProductRepository
 import net.coobird.thumbnailator.Thumbnails
 import org.springframework.stereotype.Service
@@ -129,6 +130,7 @@ class ProductService(
       categories = updatedProduct.categories,
       sizes = updatedProduct.sizes,
       price = updatedProduct.price,
+      priceCurrency = Currency.EUR,
       status = updatedProduct.status,
       photos = allPhotos.ifEmpty { null }
     )

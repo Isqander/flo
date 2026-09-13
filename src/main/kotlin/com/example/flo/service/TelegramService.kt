@@ -86,7 +86,7 @@ class TelegramService(
         return """
             <b>${product.name}</b> 
             ${product.description}
-            <b>Стоимость:</b> ${product.price}₽
+            <b>Стоимость:</b> ${product.price}€
         """.trimIndent()
     }
 

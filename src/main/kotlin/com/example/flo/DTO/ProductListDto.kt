@@ -27,7 +27,7 @@ data class ProductListDto(
     @Schema(description = "Product sizes")
     val sizes: List<Size>,
 
-    @Schema(description = "Product price", example = "1000")
+    @Schema(description = "Product price in EUR", example = "1000")
     val price: BigDecimal,
 
     @Schema(description = "Whether product is marked as new", example = "true")

@@ -126,7 +126,7 @@ class OrderService(
 
     private fun sendOrderNotification(order: Order, products: List<Product>) {
         val totalPrice = products.sumOf { it.price }
-        val productsList = products.joinToString("\n") { "- ${it.name} (${it.price}₽)" }
+        val productsList = products.joinToString("\n") { "- ${it.name} (${it.price}€)" }
 
         val message = """
             <b>Новый заказ #${order.id}</b>
@@ -140,7 +140,7 @@ class OrderService(
             <b>Товары:</b>
             $productsList
 
-            <b>Итого:</b> $totalPrice₽
+            <b>Итого:</b> $totalPrice€
             <b>Дата:</b> ${order.createdAt}
         """.trimIndent()
 
