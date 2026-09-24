@@ -55,7 +55,9 @@ class SecurityConfig(
         configuration.allowedOrigins = listOf(
             "http://localhost:5173",
             "http://flo-admin-front.151.244.72.126.nip.io",
-            "http://flo-frontend.151.244.72.126.nip.io"
+            "http://flo-frontend.151.244.72.126.nip.io",
+            "https://flovintage.shop",
+            "https://www.flovintage.shop"
         )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
