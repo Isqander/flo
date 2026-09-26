@@ -34,6 +34,8 @@ class PhotoController(private val photoService: PhotoService) {
         try {
             val contentType = photoService.getContentType(filename)
             response.contentType = contentType ?: "application/octet-stream"
+            // filenames are UUID-based, content never changes -> cache forever
+            response.setHeader("Cache-Control", "public, max-age=31536000, immutable")
             val photoBytes = photoService.getPhoto(filename)
             response.setContentLength(photoBytes.size)
             response.outputStream.use { it.write(photoBytes) }

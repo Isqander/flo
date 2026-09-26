@@ -92,7 +92,9 @@ class SecurityConfig(
         http
             .cors { }
             .csrf { it.disable() }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            // stop Spring Security from stamping no-store over the photo controller's
+            // immutable cache headers (see PhotoController)
+            .headers { headers -> headers.cacheControl { it.disable() } }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(
                     "/swagger-ui.html",
